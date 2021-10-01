@@ -24,6 +24,9 @@ class Maze3D:
         # Hide the mouse cursor
         pygame.mouse.set_visible(False)
 
+        # Lock mouse and keyboard to game window
+        pygame.event.set_grab(True)
+
         # Initialize shaders
         self.shader = Shader3D()
         self.shader.use()
@@ -56,33 +59,59 @@ class Maze3D:
         self.sIsPressed = False
         self.dIsPressed = False
         self.wIsPressed = False
-        self.upIsPressed = False
-        self.downIsPressed = False
+        self.lShiftIsPressed = False
+
+        # Mouse
+        self.mouseMove = False
+        self.mouseX = 0
+        self.mouseY = 0
+
+        # Move Speed
+        self.speed = 2
+
+        # Mouse Sensitivity
+        self.sens = 500
 
 
     def update(self) -> None:
         # Set delta time
-        delta_time = self.clock.tick() / 1000.0
+        delta_time = self.clock.tick() / 500.0
+        # Breytti ur 1000.0 í 500.0
 
         self.angle += math.pi * delta_time
         
+        if self.lShiftIsPressed:
+            self.speed = 4
+        else:
+            self.speed = 2
         # CHECK KEY INPUT
         # Keys: A, S, D, W
         if self.aIsPressed:
-            self.viewMatrix.slide(-1 * delta_time, 0, 0)
+            self.viewMatrix.slide(-1 * delta_time * self.speed, 0, 0)
         if self.sIsPressed:
-            self.viewMatrix.slide(0, 0, 1 * delta_time)
+            self.viewMatrix.slide(0, 0, 1 * delta_time * self.speed)
         if self.dIsPressed:
-            self.viewMatrix.slide(1 * delta_time, 0, 0)
+            self.viewMatrix.slide(1 * delta_time * self.speed, 0, 0)
         if self.wIsPressed:
-            self.viewMatrix.slide(0, 0, -1 * delta_time)
+            self.viewMatrix.slide(0, 0, -1 * delta_time * self.speed)
         
+        # Trash code by robert!
         # Keys: Arrow Up, Arrow Down
-        if self.upIsPressed:
-            self.viewMatrix.roll(math.pi * delta_time)
-        if self.downIsPressed:
-            self.viewMatrix.roll(-math.pi * delta_time)
-    
+        #if self.upIsPressed:
+            #self.viewMatrix.roll(math.pi * delta_time)
+        #if self.downIsPressed:
+            #self.viewMatrix.roll(-math.pi * delta_time)
+        # Danni code
+        if self.mouseMove:
+            mouseXNew, mouseYNew = pygame.mouse.get_rel()
+            if mouseXNew > 0:
+                self.viewMatrix.yaw(math.pi * delta_time)
+            if mouseXNew < 0:
+                self.viewMatrix.yaw(-math.pi * delta_time)
+            if mouseYNew > 0:
+                self.viewMatrix.pitch(-math.pi * delta_time)
+            if mouseYNew < 0:
+                self.viewMatrix.pitch(math.pi * delta_time)
 
     def display(self) -> None:
         glEnable(GL_DEPTH_TEST)
@@ -134,8 +163,13 @@ class Maze3D:
                     running = False
                 
                 elif event.type == pygame.KEYDOWN:
+                    # Danni code
+                    # Esc key to quit game
+                    if event.key == K_ESCAPE:
+                        print("Quit game")
+                        running = False
                     # Keys: A, S, D, W
-                    if event.key == K_a:
+                    elif event.key == K_a:
                         self.aIsPressed = True
                     elif event.key == K_s:
                         self.sIsPressed = True
@@ -143,11 +177,9 @@ class Maze3D:
                         self.dIsPressed = True
                     elif event.key == K_w:
                         self.wIsPressed = True
-                    # Keys: Arrow Up, Arrow Down
-                    elif event.key == K_UP:
-                        self.upIsPressed = True
-                    elif event.key == K_DOWN:
-                        self.downIsPressed = True
+                    # Key: Left Shift
+                    elif event.key == K_LSHIFT:
+                        self.lShiftIsPressed = True
                     
                 
                 elif event.type == pygame.KEYUP:
@@ -160,20 +192,21 @@ class Maze3D:
                         self.dIsPressed = False
                     elif event.key == K_w:
                         self.wIsPressed = False
-                    # Keys: Arrow Up, Arrow Down
-                    elif event.key == K_UP:
-                        self.upIsPressed = False
-                    elif event.key == K_DOWN:
-                        self.downIsPressed = False
+                    # Key: Left Shift
+                    elif event.key == K_LSHIFT:
+                        self.lShiftIsPressed = False
                 
                 elif event.type == pygame.MOUSEMOTION:
-                    pass
+                    self.mouseMove = True
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     pass
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     pass
+
+                else:
+                    self.mouseMove = False
 
         
             self.update()
