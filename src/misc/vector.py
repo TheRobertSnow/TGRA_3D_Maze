@@ -23,6 +23,14 @@ class Vector:
         self.x /= length
         self.y /= length
         self.z /= length
+    
+    def multiply_with_matrix(self, matrix):
+        m = matrix
+        temp_x = (self.x*m[0]) + (self.y*m[1]) + (self.z*m[2])
+        temp_y = (self.x*m[3]) + (self.y*m[4]) + (self.z*m[5])
+        self.z = (self.x*m[6]) + (self.y*m[7]) + (self.z*m[8])
+        self.x = temp_x
+        self.y = temp_y
 
     def dot(self, other):
         return self.x * other.x + self.y * other.y + self.z * other.z

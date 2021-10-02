@@ -150,9 +150,19 @@ class ViewMatrix:
         # Looking to the sides, rotate around vector v
         c = cos(angle)
         s = sin(angle)
-        temp_u = self.u * c + self.n * s
-        self.n = self.u * -s + self.n * c
-        self.u = temp_u
+        counter = 0
+        matrix = [c, 0, s,
+                  0, 1, 0,
+                 -s, 0, c,]
+        
+        self.v.multiply_with_matrix(matrix)
+        self.u.multiply_with_matrix(matrix)
+        self.n.multiply_with_matrix(matrix)
+        
+
+        # temp_u = self.u * c + self.n * s
+        # self.n = self.u * -s + self.n * c
+        # self.u = temp_u
 
     def get_matrix(self):
         minusEye = Vector(-self.eye.x, -self.eye.y, -self.eye.z)

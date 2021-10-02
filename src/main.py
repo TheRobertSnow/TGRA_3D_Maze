@@ -54,6 +54,9 @@ class Maze3D:
         # Test variable
         self.angle = 0
 
+        self.ground = []
+        self.walls = []
+
         # Controls
         self.aIsPressed = False
         self.sIsPressed = False
@@ -95,19 +98,12 @@ class Maze3D:
         if self.wIsPressed:
             self.viewMatrix.slide(0, 0, -1 * delta_time * self.speed)
         
-        # Trash code by robert!
-        # Keys: Arrow Up, Arrow Down
-        #if self.upIsPressed:
-            #self.viewMatrix.roll(math.pi * delta_time)
-        #if self.downIsPressed:
-            #self.viewMatrix.roll(-math.pi * delta_time)
-        # Danni code
         if self.mouseMove:
             mouseXNew, mouseYNew = pygame.mouse.get_rel()
             if mouseXNew > 0:
-                self.viewMatrix.yaw(math.pi * delta_time)
-            if mouseXNew < 0:
                 self.viewMatrix.yaw(-math.pi * delta_time)
+            if mouseXNew < 0:
+                self.viewMatrix.yaw(math.pi * delta_time)
             if mouseYNew > 0:
                 self.viewMatrix.pitch(-math.pi * delta_time)
             if mouseYNew < 0:
@@ -150,6 +146,15 @@ class Maze3D:
         self.shader.set_model_matrix(self.modelMatrix.matrix)
         self.cube.draw(self.shader)
         self.modelMatrix.pop_matrix()
+
+        # Draw every ground object in self.ground[]
+        for ground in self.ground:
+            pass
+
+        # Draw every wall in self.walls[]
+        for wall in self.walls:
+            pass
+        
         # +++++ END DRAW +++++
 
         pygame.display.flip()
