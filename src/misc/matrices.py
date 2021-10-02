@@ -131,28 +131,39 @@ class ViewMatrix:
         self.eye += self.u * del_u + self.v * del_v + self.n * del_n
     
     def roll(self, angle):
-        # Looking up and down, rotate around vector u
-        c = cos(angle)
-        s = sin(angle)
-        temp_n = self.v * s + self.n * c
-        self.v = self.v * c + self.n * -s
-        self.n = temp_n
-
-    def pitch(self, angle):
-        # Looking to the sides, rotate around vector v
-        c = cos(angle)
-        s = sin(angle)
-        temp_n = self.u * -s + self.n * c
-        self.u = self.u * c + self.n * s
-        self.n = temp_n
-
-    def yaw(self, angle): 
         # Tilting view, rotate around vector n
         c = cos(angle)
         s = sin(angle)
-        temp_v = self.u * s + self.v * c
-        self.u = self.u * c + self.v * -s
+
+        temp_u = self.u * c + self.v * s
+        self.v = self.u * -s + self.v * c
+        self.u = temp_u
+
+    def pitch(self, angle):
+        # Looking up and down, rotate around vector u
+        c = cos(angle)
+        s = sin(angle)
+        temp_v = self.v * c + self.n * s
+        self.n = self.v * -s + self.n * c
         self.v = temp_v
+
+    def yaw(self, angle): 
+        # Looking to the sides, rotate around global vector y
+        c = cos(angle)
+        s = sin(angle)
+        counter = 0
+        matrix = [c, 0, s,
+                  0, 1, 0,
+                 -s, 0, c,]
+        
+        self.v.multiply_with_matrix(matrix)
+        self.u.multiply_with_matrix(matrix)
+        self.n.multiply_with_matrix(matrix)
+        
+
+        # temp_u = self.u * c + self.n * s
+        # self.n = self.u * -s + self.n * c
+        # self.u = temp_u
 
     def get_matrix(self):
         minusEye = Vector(-self.eye.x, -self.eye.y, -self.eye.z)
