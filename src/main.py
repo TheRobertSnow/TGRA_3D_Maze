@@ -59,12 +59,14 @@ class Maze3D:
         self.sIsPressed = False
         self.dIsPressed = False
         self.wIsPressed = False
+        self.leftIsPressed = False
+        self.downIsPressed = False
+        self.rightIsPressed = False
+        self.upIsPressed = False
         self.lShiftIsPressed = False
 
         # Mouse
         self.mouseMove = False
-        self.mouseX = 0
-        self.mouseY = 0
 
         # Move Speed
         self.speed = 2
@@ -82,6 +84,7 @@ class Maze3D:
         
         if self.lShiftIsPressed:
             self.speed = 4
+            self.viewMatrix.yaw(-math.pi * delta_time)
         else:
             self.speed = 2
         # CHECK KEY INPUT
@@ -95,6 +98,15 @@ class Maze3D:
         if self.wIsPressed:
             self.viewMatrix.slide(0, 0, -1 * delta_time * self.speed)
         
+        # Keys: Left, Down, Right, Up
+        #if self.leftIsPressed:
+            #self.viewMatrix.pitch(-math.pi * delta_time)
+        #if self.downIsPressed:
+            #self.viewMatrix.roll(math.pi * delta_time)
+        #if self.rightIsPressed:
+            #self.viewMatrix.pitch(math.pi * delta_time)
+        #if self.upIsPressed:
+            #self.viewMatrix.roll(-math.pi * delta_time)
         # Trash code by robert!
         # Keys: Arrow Up, Arrow Down
         #if self.upIsPressed:
@@ -103,15 +115,15 @@ class Maze3D:
             #self.viewMatrix.roll(-math.pi * delta_time)
         # Danni code
         if self.mouseMove:
-            mouseXNew, mouseYNew = pygame.mouse.get_rel()
-            if mouseXNew > 0:
-                self.viewMatrix.yaw(math.pi * delta_time)
-            if mouseXNew < 0:
-                self.viewMatrix.yaw(-math.pi * delta_time)
-            if mouseYNew > 0:
-                self.viewMatrix.pitch(-math.pi * delta_time)
-            if mouseYNew < 0:
+            mouseXmove, mouseYmove = pygame.mouse.get_rel()
+            if mouseXmove > 0:
                 self.viewMatrix.pitch(math.pi * delta_time)
+            if mouseXmove < 0:
+                self.viewMatrix.pitch(-math.pi * delta_time)
+            if mouseYmove > 0:
+                self.viewMatrix.roll(math.pi * delta_time)
+            if mouseYmove < 0:
+                self.viewMatrix.roll(-math.pi * delta_time)
 
     def display(self) -> None:
         glEnable(GL_DEPTH_TEST)
@@ -177,6 +189,15 @@ class Maze3D:
                         self.dIsPressed = True
                     elif event.key == K_w:
                         self.wIsPressed = True
+                    # Keys: Left, Down, Right, Up
+                    elif event.key == K_LEFT:
+                        self.leftIsPressed = True
+                    elif event.key == K_DOWN:
+                        self.downIsPressed = True
+                    elif event.key == K_RIGHT:
+                        self.rightIsPressed = True
+                    elif event.key == K_UP:
+                        self.upIsPressed = True
                     # Key: Left Shift
                     elif event.key == K_LSHIFT:
                         self.lShiftIsPressed = True
@@ -192,6 +213,15 @@ class Maze3D:
                         self.dIsPressed = False
                     elif event.key == K_w:
                         self.wIsPressed = False
+                    # Keys: Left, Down, Right, Up
+                    elif event.key == K_LEFT:
+                        self.leftIsPressed = False
+                    elif event.key == K_DOWN:
+                        self.downIsPressed = False
+                    elif event.key == K_RIGHT:
+                        self.rightIsPressed = False
+                    elif event.key == K_UP:
+                        self.upIsPressed = False
                     # Key: Left Shift
                     elif event.key == K_LSHIFT:
                         self.lShiftIsPressed = False
