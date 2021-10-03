@@ -78,11 +78,11 @@ class Maze3D:
         # Mouse
         self.mouseMove = False
 
+        # Collission 
+        self.collission = False
+
         # Move Speed
         self.speed = 2
-
-        # Mouse Sensitivity
-        self.sens = 500
 
 
     def update(self) -> None:
@@ -96,17 +96,26 @@ class Maze3D:
             self.speed = 4
         else:
             self.speed = 6
+        
+        # Collision detection
+        for wall in self.levelWalls:
+            #print(self.viewMatrix.eye.x)
+            #print(self.viewMatrix.eye.y)
+            if wall.checkIfCollission(self.viewMatrix.eye.x, self.viewMatrix.eye.z):
+                self.collission = True
+
+        if self.collission != True:
         # CHECK KEY INPUT
         # Keys: A, S, D, W
-        if self.aIsPressed:
-            self.viewMatrix.slide(-1 * delta_time * self.speed, 0, 0)
-        if self.sIsPressed:
-            self.viewMatrix.slide(0, 0, 1 * delta_time * self.speed)
-        if self.dIsPressed:
-            self.viewMatrix.slide(1 * delta_time * self.speed, 0, 0)
-        if self.wIsPressed:
-            self.viewMatrix.slide(0, 0, -1 * delta_time * self.speed)
-        
+            if self.aIsPressed:
+                self.viewMatrix.slide(-1 * delta_time * self.speed, 0, 0)
+            if self.sIsPressed:
+                self.viewMatrix.slide(0, 0, 1 * delta_time * self.speed)
+            if self.dIsPressed:
+                self.viewMatrix.slide(1 * delta_time * self.speed, 0, 0)
+            if self.wIsPressed:
+                self.viewMatrix.slide(0, 0, -1 * delta_time * self.speed)
+            
         if self.mouseMove:
             mouseXNew, mouseYNew = pygame.mouse.get_rel()
             if mouseXNew > 0:
