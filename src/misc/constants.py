@@ -9,3 +9,6 @@ DISPLAY_HEIGHT = 900
 SIMPLE_3D_VERT = "/src/misc/shaders/simple3D.vert"
 SIMPLE_3D_FRAG = "/src/misc/shaders/simple3D.frag"
 
+# +++++ SCENES +++++
+LEVEL_1 = "level1.json"
+

@@ -147,7 +147,7 @@ class ViewMatrix:
         self.v = temp_v
 
     def yaw(self, angle): 
-        # Looking to the sides, rotate around vector v
+        # Looking to the sides, rotate around global vector y
         c = cos(angle)
         s = sin(angle)
         counter = 0

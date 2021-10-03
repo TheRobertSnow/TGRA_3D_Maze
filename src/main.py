@@ -8,12 +8,14 @@ from pygame.locals import *
 import sys
 import time
 import math
+from src.assets.types.walls import Walls
 from src.misc.base_3d_objects import Cube
 
-from src.misc.constants import DISPLAY_WIDTH, DISPLAY_HEIGHT
+from src.misc.constants import *
 from src.misc.point import Point
 from src.misc.vector import Vector
 from src.misc.shaders import Shader3D
+from src.data.level_loader import LevelLoader
 from src.misc.matrices import ModelMatrix, ProjectionMatrix, ViewMatrix
 
 class Maze3D:
@@ -54,8 +56,11 @@ class Maze3D:
         # Test variable
         self.angle = 0
 
-        self.ground = []
-        self.walls = []
+        # Load levels
+        levelLoader = LevelLoader()
+        levelLoader.read_level(LEVEL_1)
+        self.levelGround = levelLoader.ground
+        self.levelWalls = levelLoader.walls
 
         # Controls
         self.aIsPressed = False
@@ -113,6 +118,7 @@ class Maze3D:
         glEnable(GL_DEPTH_TEST)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         glViewport(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        glClearColor(0.78, 1.0, 1.0, 1.0)
 
         # +++++ DRAW OBJECTS +++++
         self.shader.set_view_matrix(self.viewMatrix.get_matrix())
@@ -121,39 +127,30 @@ class Maze3D:
 
         self.cube.set_vertices(self.shader)
 
-        self.shader.set_solid_color(0.0, 1.0, 1.0)
-        self.modelMatrix.push_matrix()
-        self.modelMatrix.add_translation(0.0, 2.5, 0.0)
-        self.modelMatrix.add_rotate_z(self.angle)
-        self.modelMatrix.add_rotate_x(self.angle)
-        self.modelMatrix.add_scale(1.0, 1.0, 2.0)
-        self.shader.set_model_matrix(self.modelMatrix.matrix)
-        self.cube.draw(self.shader)
-        self.modelMatrix.pop_matrix()
+        for ground in self.levelGround:
+            self.shader.set_solid_color(ground.color[0], ground.color[1], ground.color[2])
+            self.modelMatrix.push_matrix()
+            self.modelMatrix.add_translation(ground.translation[0], ground.translation[1], ground.translation[2])
+            self.modelMatrix.add_rotate_x(ground.rotate[0])
+            self.modelMatrix.add_rotate_y(ground.rotate[1])
+            self.modelMatrix.add_rotate_z(ground.rotate[2])
+            self.modelMatrix.add_scale(ground.scale[0], ground.scale[1], ground.scale[2])
+            self.shader.set_model_matrix(self.modelMatrix.matrix)
+            self.cube.draw(self.shader)
+            self.modelMatrix.pop_matrix()
 
-        self.shader.set_solid_color(1.0, 1.0, 0.0)
-        self.modelMatrix.push_matrix()
-        self.modelMatrix.add_translation(0.0, 0.0, 2.0)
-        self.modelMatrix.add_rotate_y(self.angle)
-        self.modelMatrix.add_scale(2.0, 1.0, 1.0)
-        self.shader.set_model_matrix(self.modelMatrix.matrix)
-        self.cube.draw(self.shader)
-        self.modelMatrix.pop_matrix()
-
-        self.shader.set_solid_color(1.0, 0.0, 1.0)
-        self.modelMatrix.push_matrix()
-        self.modelMatrix.add_translation(0.0, 0.0, 0.0)
-        self.shader.set_model_matrix(self.modelMatrix.matrix)
-        self.cube.draw(self.shader)
-        self.modelMatrix.pop_matrix()
-
-        # Draw every ground object in self.ground[]
-        for ground in self.ground:
-            pass
-
-        # Draw every wall in self.walls[]
-        for wall in self.walls:
-            pass
+        # DRAW WALLS
+        for wall in self.levelWalls:
+            self.shader.set_solid_color(wall.color[0], wall.color[1], wall.color[2])
+            self.modelMatrix.push_matrix()
+            self.modelMatrix.add_translation(wall.translation[0], wall.translation[1], wall.translation[2])
+            self.modelMatrix.add_rotate_x(wall.rotate[0])
+            self.modelMatrix.add_rotate_y(wall.rotate[1])
+            self.modelMatrix.add_rotate_z(wall.rotate[2])
+            self.modelMatrix.add_scale(wall.scale[0], wall.scale[1], wall.scale[2])
+            self.shader.set_model_matrix(self.modelMatrix.matrix)
+            self.cube.draw(self.shader)
+            self.modelMatrix.pop_matrix()
         
         # +++++ END DRAW +++++
 
