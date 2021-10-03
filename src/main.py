@@ -38,7 +38,7 @@ class Maze3D:
 
         # Initialize view_matrix
         self.viewMatrix = ViewMatrix()
-        self.viewMatrix.look(Point(3,3,3), Point(0,0,0), Vector(0,1,0))
+        self.viewMatrix.look(Point(1,40,1), Point(0,0,0), Vector(0,1,0))
         self.shader.set_view_matrix(self.viewMatrix.get_matrix())
 
         # Initialize projection_matrix
@@ -93,7 +93,7 @@ class Maze3D:
         if self.lShiftIsPressed:
             self.speed = 4
         else:
-            self.speed = 2
+            self.speed = 6
         # CHECK KEY INPUT
         # Keys: A, S, D, W
         if self.aIsPressed:
