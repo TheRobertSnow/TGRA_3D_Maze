@@ -125,6 +125,7 @@ class ViewMatrix:
         self.u = up.cross(self.n)
         self.u.normalize()
         self.v = self.n.cross(self.u)
+        self.v.normalize()
     
     def slide(self, del_u, del_v, del_n):
         self.eye += self.u * del_u + self.v * del_v + self.n * del_n

@@ -67,12 +67,14 @@ class Maze3D:
         self.sIsPressed = False
         self.dIsPressed = False
         self.wIsPressed = False
+        self.leftIsPressed = False
+        self.downIsPressed = False
+        self.rightIsPressed = False
+        self.upIsPressed = False
         self.lShiftIsPressed = False
 
         # Mouse
         self.mouseMove = False
-        self.mouseX = 0
-        self.mouseY = 0
 
         # Move Speed
         self.speed = 2
@@ -179,6 +181,15 @@ class Maze3D:
                         self.dIsPressed = True
                     elif event.key == K_w:
                         self.wIsPressed = True
+                    # Keys: Left, Down, Right, Up
+                    elif event.key == K_LEFT:
+                        self.leftIsPressed = True
+                    elif event.key == K_DOWN:
+                        self.downIsPressed = True
+                    elif event.key == K_RIGHT:
+                        self.rightIsPressed = True
+                    elif event.key == K_UP:
+                        self.upIsPressed = True
                     # Key: Left Shift
                     elif event.key == K_LSHIFT:
                         self.lShiftIsPressed = True
@@ -194,6 +205,15 @@ class Maze3D:
                         self.dIsPressed = False
                     elif event.key == K_w:
                         self.wIsPressed = False
+                    # Keys: Left, Down, Right, Up
+                    elif event.key == K_LEFT:
+                        self.leftIsPressed = False
+                    elif event.key == K_DOWN:
+                        self.downIsPressed = False
+                    elif event.key == K_RIGHT:
+                        self.rightIsPressed = False
+                    elif event.key == K_UP:
+                        self.upIsPressed = False
                     # Key: Left Shift
                     elif event.key == K_LSHIFT:
                         self.lShiftIsPressed = False
