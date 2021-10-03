@@ -12,3 +12,8 @@ SIMPLE_3D_FRAG = "/src/misc/shaders/simple3D.frag"
 # +++++ SCENES +++++
 LEVEL_1 = "level1.json"
 
+# +++++ RUN MODES +++++
+EDIT_MODE = "edit"
+GAMER_MODE = "gamer"
+MODES = [EDIT_MODE, GAMER_MODE]
+

@@ -19,7 +19,7 @@ from src.data.level_loader import LevelLoader
 from src.misc.matrices import ModelMatrix, ProjectionMatrix, ViewMatrix
 
 class Maze3D:
-    def __init__(self) -> None:
+    def __init__(self, argv) -> None:
         pygame.init()
         pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF)
 
