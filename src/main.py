@@ -29,6 +29,14 @@ class Maze3D:
         # Lock mouse and keyboard to game window
         pygame.event.set_grab(True)
 
+        # Load levels
+        levelLoader = LevelLoader()
+        levelLoader.read_level(LEVEL_1)
+        self.levelGround = levelLoader.ground
+        self.levelWalls = levelLoader.walls
+        self.startPoint = levelLoader.startPoint
+        self.endPoint = levelLoader.endPoint
+
         # Initialize shaders
         self.shader = Shader3D()
         self.shader.use()
@@ -38,7 +46,7 @@ class Maze3D:
 
         # Initialize view_matrix
         self.viewMatrix = ViewMatrix()
-        self.viewMatrix.look(Point(1,40,1), Point(0,0,0), Vector(0,1,0))
+        self.viewMatrix.look(Point(self.startPoint[0].position[0], self.startPoint[0].position[1], self.startPoint[0].position[2]), Point(0,0,0), Vector(0,1,0))
         self.shader.set_view_matrix(self.viewMatrix.get_matrix())
 
         # Initialize projection_matrix
@@ -55,12 +63,6 @@ class Maze3D:
 
         # Test variable
         self.angle = 0
-
-        # Load levels
-        levelLoader = LevelLoader()
-        levelLoader.read_level(LEVEL_1)
-        self.levelGround = levelLoader.ground
-        self.levelWalls = levelLoader.walls
 
         # Controls
         self.aIsPressed = False
