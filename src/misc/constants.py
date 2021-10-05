@@ -11,6 +11,7 @@ SIMPLE_3D_FRAG = "/src/misc/shaders/simple3D.frag"
 
 # +++++ SCENES +++++
 LEVEL_1 = "level1.json"
+COLLISION_TEST = "collisionTest.json"
 
 # +++++ RUN MODES +++++
 EDIT_MODE = "edit"

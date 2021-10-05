@@ -117,6 +117,7 @@ class ViewMatrix:
         self.u = Vector(1, 0, 0)
         self.v = Vector(0, 1, 0)
         self.n = Vector(0, 0, 1)
+        self.direction = Vector(-1, 0, 0)
 
     def look(self, eye, center, up):
         self.eye = eye
@@ -129,6 +130,22 @@ class ViewMatrix:
     
     def slide(self, del_u, del_v, del_n):
         self.eye += self.u * del_u + self.v * del_v + self.n * del_n
+    
+    def move(self, del_u, del_v, del_n, jeff):
+        posX = jeff[0]
+        negX = jeff[1]
+        posZ = jeff[2]
+        negZ = jeff[3]
+        vect = self.u * del_u + self.v * del_v  + self.direction * del_n
+        if posX or negX:
+            vect.x = 0
+            self.eye += vect
+        elif posZ or negZ:
+            vect.z = 0
+            self.eye += vect
+        else:
+            self.eye += vect
+        # self.eye += self.u * del_u + self.v * del_v  + self.direction * del_n
     
     def roll(self, angle):
         # Tilting view, rotate around vector n
@@ -159,6 +176,7 @@ class ViewMatrix:
         self.v.multiply_with_matrix(matrix)
         self.u.multiply_with_matrix(matrix)
         self.n.multiply_with_matrix(matrix)
+        self.direction.multiply_with_matrix(matrix)
         
 
         # temp_u = self.u * c + self.n * s

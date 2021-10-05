@@ -19,7 +19,7 @@ from src.data.level_loader import LevelLoader
 from src.misc.matrices import ModelMatrix, ProjectionMatrix, ViewMatrix
 
 class Maze3D:
-    def __init__(self, argv) -> None:
+    def __init__(self, mode) -> None:
         pygame.init()
         pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF)
 
@@ -31,7 +31,7 @@ class Maze3D:
 
         # Load levels
         levelLoader = LevelLoader()
-        levelLoader.read_level(LEVEL_1)
+        levelLoader.read_level(COLLISION_TEST)
         self.levelGround = levelLoader.ground
         self.levelWalls = levelLoader.walls
         self.startPoint = levelLoader.startPoint
@@ -64,6 +64,9 @@ class Maze3D:
         # Test variable
         self.angle = 0
 
+        # Camera Mode
+        self.cameraMode = mode
+
         # Controls
         self.aIsPressed = False
         self.sIsPressed = False
@@ -93,20 +96,40 @@ class Maze3D:
         self.angle += math.pi * delta_time
         
         if self.lShiftIsPressed:
-            self.speed = 4
+            self.speed = 2
         else:
             self.speed = 6
-        
-        # Collision detection
-        for wall in self.levelWalls:
-            #print(self.viewMatrix.eye.x)
-            #print(self.viewMatrix.eye.y)
-            if wall.checkIfCollission(self.viewMatrix.eye.x, self.viewMatrix.eye.z):
-                self.collission = True
 
-        if self.collission != True:
+        # Movement disabled
+        slidePosX = False
+        slideNegX = False
+        slidePosZ = False
+        slideNegZ = False
+        
+
+        # Collision detection
+        collisionRadius = 1
+        for wall in self.levelWalls:
+            data = wall.checkIfCollission(self.viewMatrix.eye.x, self.viewMatrix.eye.z, collisionRadius, self.viewMatrix.eye)
+            # if data[0]: 
+                # print(data)
+                # print(self.viewMatrix.eye)
+            if data[0]:
+                self.collission = True
+                slidePosX = data[1]
+                slideNegX = data[2]
+                slidePosZ = data[3]
+                slideNegZ = data[4]
+                if slideNegX:
+                    wall.color = [1.0, 0.0, 0.0]
+            else:
+                wall.color = [0.8, 1.0, 0.8]
+
+
         # CHECK KEY INPUT
         # Keys: A, S, D, W
+        jeff = [slidePosX, slideNegX, slidePosZ, slideNegZ]
+        if self.cameraMode == EDIT_MODE:
             if self.aIsPressed:
                 self.viewMatrix.slide(-1 * delta_time * self.speed, 0, 0)
             if self.sIsPressed:
@@ -115,6 +138,16 @@ class Maze3D:
                 self.viewMatrix.slide(1 * delta_time * self.speed, 0, 0)
             if self.wIsPressed:
                 self.viewMatrix.slide(0, 0, -1 * delta_time * self.speed)
+        elif self.cameraMode == GAMER_MODE:
+            if self.aIsPressed: # NegX
+                self.viewMatrix.move(-1 * delta_time * self.speed, 0, 0, jeff)
+            if self.sIsPressed: # PosZ
+                self.viewMatrix.move(0, 0, 1 * delta_time * self.speed, jeff)
+            if self.dIsPressed: # PosX
+                self.viewMatrix.move(1 * delta_time * self.speed, 0, 0, jeff)
+            if self.wIsPressed: # NegZ
+                self.viewMatrix.move(0, 0, -1 * delta_time * self.speed, jeff)
+
             
         if self.mouseMove:
             mouseXNew, mouseYNew = pygame.mouse.get_rel()

@@ -11,3 +11,6 @@ class Point:
 
     def __sub__(self, other):
         return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
+    
+    def __str__(self) -> str:
+        return "[" + str(self.x) + ", " + str(self.y) + ", " + str(self.z) + "]"
