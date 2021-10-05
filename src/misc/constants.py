@@ -4,6 +4,10 @@ DISPLAY_WIDTH = 1440
 DISPLAY_HEIGHT = 900
 
 # +++++ MOUSE +++++
+MOUSESENS = 4
+
+# +++++ MOVEMENT +++++
+MOVEMENTSPEED = 2
 
 # +++++ SHADERS +++++
 SIMPLE_3D_VERT = "/src/misc/shaders/simple3D.vert"

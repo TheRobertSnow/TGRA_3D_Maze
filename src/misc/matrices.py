@@ -137,15 +137,20 @@ class ViewMatrix:
         posZ = jeff[2]
         negZ = jeff[3]
         vect = self.u * del_u + self.v * del_v  + self.direction * del_n
-        if posX or negX:
-            vect.x = 0
-            self.eye += vect
-        elif posZ or negZ:
-            vect.z = 0
-            self.eye += vect
-        else:
-            self.eye += vect
-        # self.eye += self.u * del_u + self.v * del_v  + self.direction * del_n
+        if posX:
+            if vect.x > 0:
+                vect.x = 0
+        if negX:
+            if vect.x < 0:
+                vect.x = 0
+        if posZ:
+            if vect.z > 0:
+                vect.z = 0
+        if negZ:
+            if vect.z < 0:
+                vect.z = 0
+        self.eye += vect
+        #self.eye += self.u * del_u + self.v * del_v  + self.direction * del_n
     
     def roll(self, angle):
         # Tilting view, rotate around vector n

@@ -31,7 +31,7 @@ class Maze3D:
 
         # Load levels
         levelLoader = LevelLoader()
-        levelLoader.read_level(COLLISION_TEST)
+        levelLoader.read_level(LEVEL_1)
         self.levelGround = levelLoader.ground
         self.levelWalls = levelLoader.walls
         self.startPoint = levelLoader.startPoint
@@ -84,9 +84,6 @@ class Maze3D:
         # Collission 
         self.collission = False
 
-        # Move Speed
-        self.speed = 2
-
 
     def update(self) -> None:
         # Set delta time
@@ -94,11 +91,10 @@ class Maze3D:
         # Breytti ur 1000.0 í 500.0
 
         self.angle += math.pi * delta_time
-        
         if self.lShiftIsPressed:
-            self.speed = 2
+            movementSpeed = MOVEMENTSPEED * 1.5
         else:
-            self.speed = 6
+            movementSpeed = MOVEMENTSPEED
 
         # Movement disabled
         slidePosX = False
@@ -116,14 +112,14 @@ class Maze3D:
                 # print(self.viewMatrix.eye)
             if data[0]:
                 self.collission = True
-                slidePosX = data[1]
-                slideNegX = data[2]
-                slidePosZ = data[3]
-                slideNegZ = data[4]
-                if slideNegX:
-                    wall.color = [1.0, 0.0, 0.0]
-            else:
-                wall.color = [0.8, 1.0, 0.8]
+                if not slidePosX:
+                    slidePosX = data[1]
+                if not slideNegX:
+                    slideNegX = data[2]
+                if not slidePosZ:
+                    slidePosZ = data[3]
+                if not slideNegZ:
+                    slideNegZ = data[4]
 
 
         # CHECK KEY INPUT
@@ -131,34 +127,36 @@ class Maze3D:
         jeff = [slidePosX, slideNegX, slidePosZ, slideNegZ]
         if self.cameraMode == EDIT_MODE:
             if self.aIsPressed:
-                self.viewMatrix.slide(-1 * delta_time * self.speed, 0, 0)
+                self.viewMatrix.slide(-movementSpeed * delta_time, 0, 0)
             if self.sIsPressed:
-                self.viewMatrix.slide(0, 0, 1 * delta_time * self.speed)
+                self.viewMatrix.slide(0, 0, movementSpeed * delta_time)
             if self.dIsPressed:
-                self.viewMatrix.slide(1 * delta_time * self.speed, 0, 0)
+                self.viewMatrix.slide(movementSpeed * delta_time, 0, 0)
             if self.wIsPressed:
-                self.viewMatrix.slide(0, 0, -1 * delta_time * self.speed)
+                self.viewMatrix.slide(0, 0, -movementSpeed * delta_time)
         elif self.cameraMode == GAMER_MODE:
             if self.aIsPressed: # NegX
-                self.viewMatrix.move(-1 * delta_time * self.speed, 0, 0, jeff)
+                self.viewMatrix.move(-movementSpeed * delta_time, 0, 0, jeff)
             if self.sIsPressed: # PosZ
-                self.viewMatrix.move(0, 0, 1 * delta_time * self.speed, jeff)
+                self.viewMatrix.move(0, 0, movementSpeed * delta_time, jeff)
             if self.dIsPressed: # PosX
-                self.viewMatrix.move(1 * delta_time * self.speed, 0, 0, jeff)
+                self.viewMatrix.move(movementSpeed * delta_time, 0, 0, jeff)
             if self.wIsPressed: # NegZ
-                self.viewMatrix.move(0, 0, -1 * delta_time * self.speed, jeff)
+                self.viewMatrix.move(0, 0, -movementSpeed * delta_time, jeff)
 
             
         if self.mouseMove:
             mouseXNew, mouseYNew = pygame.mouse.get_rel()
+            mouseXNew = (mouseXNew / 25) * MOUSESENS
+            mouseYNew = (mouseYNew / 25) * MOUSESENS
             if mouseXNew > 0:
-                self.viewMatrix.yaw(-math.pi * delta_time)
+                self.viewMatrix.yaw(-mouseXNew * delta_time)
             if mouseXNew < 0:
-                self.viewMatrix.yaw(math.pi * delta_time)
+                self.viewMatrix.yaw(-mouseXNew * delta_time)
             if mouseYNew > 0:
-                self.viewMatrix.pitch(-math.pi * delta_time)
+                self.viewMatrix.pitch(-mouseYNew * delta_time)
             if mouseYNew < 0:
-                self.viewMatrix.pitch(math.pi * delta_time)
+                self.viewMatrix.pitch(-mouseYNew * delta_time)
 
     def display(self) -> None:
         glEnable(GL_DEPTH_TEST)
