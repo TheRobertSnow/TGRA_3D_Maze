@@ -40,22 +40,32 @@ class Maze3D:
         # Initialize shaders
         self.shader = Shader3D()
         self.shader.use()
+        self.shader2 = Shader3D()
+        self.shader2.use()
 
         # Initialize model_matrix
         self.modelMatrix = ModelMatrix()
+        self.modelMatrix2 = ModelMatrix()
 
         # Initialize view_matrix
         self.viewMatrix = ViewMatrix()
         self.viewMatrix.look(Point(self.startPoint[0].position[0], self.startPoint[0].position[1], self.startPoint[0].position[2]), Point(0,0,0), Vector(0,1,0))
         self.shader.set_view_matrix(self.viewMatrix.get_matrix())
+        self.viewMatrix2 = ViewMatrix()
+        self.viewMatrix2.look(Point(self.startPoint[0].position[0], 40, self.startPoint[0].position[2]), Point(0,0,0), Vector(0,1,0))
+        self.shader2.set_view_matrix(self.viewMatrix2.get_matrix())
 
         # Initialize projection_matrix
         self.projectionMatrix = ProjectionMatrix()
         self.projectionMatrix.set_perspective(math.pi/2, DISPLAY_WIDTH/DISPLAY_HEIGHT, 0.5, 100)
         self.shader.set_projection_matrix(self.projectionMatrix.get_matrix())
+        self.projectionMatrix2 = ProjectionMatrix()
+        self.projectionMatrix2.set_perspective(math.pi/2, DISPLAY_WIDTH/DISPLAY_HEIGHT, 0.5, 100)
+        self.shader2.set_projection_matrix(self.projectionMatrix2.get_matrix())
 
         # Initialize cube object
         self.cube = Cube()
+        self.cube2 = Cube()
 
         # Initialize clock
         self.clock = pygame.time.Clock()
@@ -66,6 +76,8 @@ class Maze3D:
 
         # Camera Mode
         self.cameraMode = mode
+        self.topDownview = False
+        self.thirdPersonView = False
 
         # Controls
         self.aIsPressed = False
@@ -135,16 +147,15 @@ class Maze3D:
             if self.wIsPressed:
                 self.viewMatrix.slide(0, 0, -movementSpeed * delta_time)
         elif self.cameraMode == GAMER_MODE:
-            if self.aIsPressed: # NegX
+            if self.aIsPressed:
                 self.viewMatrix.move(-movementSpeed * delta_time, 0, 0, jeff)
-            if self.sIsPressed: # PosZ
+            if self.sIsPressed:
                 self.viewMatrix.move(0, 0, movementSpeed * delta_time, jeff)
-            if self.dIsPressed: # PosX
+            if self.dIsPressed:
                 self.viewMatrix.move(movementSpeed * delta_time, 0, 0, jeff)
-            if self.wIsPressed: # NegZ
+            if self.wIsPressed:
                 self.viewMatrix.move(0, 0, -movementSpeed * delta_time, jeff)
 
-            
         if self.mouseMove:
             mouseXNew, mouseYNew = pygame.mouse.get_rel()
             mouseXNew = (mouseXNew / 25) * MOUSESENS
@@ -161,8 +172,8 @@ class Maze3D:
     def display(self) -> None:
         glEnable(GL_DEPTH_TEST)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-        glViewport(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
-        glClearColor(0.78, 1.0, 1.0, 1.0)
+        glViewport(0, DISPLAY_HEIGHT, 0, DISPLAY_WIDTH)
+        #glClearColor(0.78, 1.0, 1.0, 1.0)
 
         # +++++ DRAW OBJECTS +++++
         self.shader.set_view_matrix(self.viewMatrix.get_matrix())
@@ -196,9 +207,63 @@ class Maze3D:
             self.cube.draw(self.shader)
             self.modelMatrix.pop_matrix()
         
-        # +++++ END DRAW +++++
+        if self.topDownview or self.thirdPersonView:
+            self.shader.set_solid_color(1, 0, 0)
+            self.modelMatrix.push_matrix()
+            self.modelMatrix.add_translation(self.viewMatrix.eye.x, 0.0, self.viewMatrix.eye.z)
+            self.modelMatrix.add_scale(1, 2, 1)
+            self.shader.set_model_matrix(self.modelMatrix.matrix)
+            self.cube.draw(self.shader)
+            self.modelMatrix.pop_matrix()
 
         pygame.display.flip()
+
+    def display2(self) -> None:
+        glEnable(GL_DEPTH_TEST)
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        #glViewport(720, 0, 720, 450)
+        #pygame.display.set_mode(720, 0, 720, 450)
+        #glClearColor(0.78, 1.0, 1.0, 1.0)
+
+        # +++++ DRAW OBJECTS +++++
+        self.shader.set_view_matrix(self.viewMatrix.get_matrix())
+
+        self.modelMatrix.load_identity()
+
+        self.cube.set_vertices(self.shader2)
+
+        for ground in self.levelGround:
+            self.shader.set_solid_color(ground.color[0], ground.color[1], ground.color[2])
+            self.modelMatrix.push_matrix()
+            self.modelMatrix.add_translation(ground.translation[0], ground.translation[1], ground.translation[2])
+            self.modelMatrix.add_rotate_x(ground.rotate[0])
+            self.modelMatrix.add_rotate_y(ground.rotate[1])
+            self.modelMatrix.add_rotate_z(ground.rotate[2])
+            self.modelMatrix.add_scale(ground.scale[0], ground.scale[1], ground.scale[2])
+            self.shader.set_model_matrix(self.modelMatrix.matrix)
+            self.cube.draw(self.shader)
+            self.modelMatrix.pop_matrix()
+
+        # DRAW WALLS
+        for wall in self.levelWalls:
+            self.shader.set_solid_color(wall.color[0], wall.color[1], wall.color[2])
+            self.modelMatrix.push_matrix()
+            self.modelMatrix.add_translation(wall.translation[0], wall.translation[1], wall.translation[2])
+            self.modelMatrix.add_rotate_x(wall.rotate[0])
+            self.modelMatrix.add_rotate_y(wall.rotate[1])
+            self.modelMatrix.add_rotate_z(wall.rotate[2])
+            self.modelMatrix.add_scale(wall.scale[0], wall.scale[1], wall.scale[2])
+            self.shader.set_model_matrix(self.modelMatrix.matrix)
+            self.cube.draw(self.shader)
+            self.modelMatrix.pop_matrix()
+        
+        self.shader.set_solid_color(1, 0, 0)
+        self.modelMatrix.push_matrix()
+        self.modelMatrix.add_translation(self.viewMatrix.eye.x, 0.0, self.viewMatrix.eye.z)
+        self.modelMatrix.add_scale(1, 2, 1)
+        self.shader.set_model_matrix(self.modelMatrix.matrix)
+        self.cube.draw(self.shader)
+        self.modelMatrix.pop_matrix()
 
     def program_loop(self) -> None:
         running = True
@@ -235,6 +300,14 @@ class Maze3D:
                     # Key: Left Shift
                     elif event.key == K_LSHIFT:
                         self.lShiftIsPressed = True
+                    # Key: T
+                    elif event.key == K_r:
+                        self.thirdPersonView = True
+                        self.viewMatrix.viewMode = 1
+                    # Key: T
+                    elif event.key == K_t:
+                        self.topDownview = True
+                        self.viewMatrix.viewMode = 2
                     
                 
                 elif event.type == pygame.KEYUP:
@@ -259,6 +332,14 @@ class Maze3D:
                     # Key: Left Shift
                     elif event.key == K_LSHIFT:
                         self.lShiftIsPressed = False
+                    # Key: T
+                    elif event.key == K_r:
+                        self.thirdPersonView = False
+                        self.viewMatrix.viewMode = 1
+                    # Key: T
+                    elif event.key == K_t:
+                        self.topDownview = False
+                        self.viewMatrix.viewMode = 0
                 
                 elif event.type == pygame.MOUSEMOTION:
                     self.mouseMove = True
@@ -275,6 +356,7 @@ class Maze3D:
         
             self.update()
             self.display()
+            self.display2()
         
         # Quit game
         self.quit()
