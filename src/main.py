@@ -40,8 +40,6 @@ class Maze3D:
         # Initialize shaders
         self.shader = Shader3D()
         self.shader.use()
-        self.shader2 = Shader3D()
-        self.shader2.use()
 
         # Initialize model_matrix
         self.modelMatrix = ModelMatrix()
@@ -50,18 +48,14 @@ class Maze3D:
         # Initialize view_matrix
         self.viewMatrix = ViewMatrix()
         self.viewMatrix.look(Point(self.startPoint[0].position[0], self.startPoint[0].position[1], self.startPoint[0].position[2]), Point(0,0,0), Vector(0,1,0))
-        self.shader.set_view_matrix(self.viewMatrix.get_matrix())
         self.viewMatrix2 = ViewMatrix()
-        self.viewMatrix2.look(Point(self.startPoint[0].position[0], 40, self.startPoint[0].position[2]), Point(0,0,0), Vector(0,1,0))
-        self.shader2.set_view_matrix(self.viewMatrix2.get_matrix())
+        self.viewMatrix2.look(Point(self.startPoint[0].position[0], 10, self.startPoint[0].position[2]), Point(self.startPoint[0].position[0] + 0.01, self.startPoint[0].position[1], self.startPoint[0].position[2]), Vector(0,1,0))
 
         # Initialize projection_matrix
         self.projectionMatrix = ProjectionMatrix()
         self.projectionMatrix.set_perspective(math.pi/2, DISPLAY_WIDTH/DISPLAY_HEIGHT, 0.5, 100)
-        self.shader.set_projection_matrix(self.projectionMatrix.get_matrix())
         self.projectionMatrix2 = ProjectionMatrix()
-        self.projectionMatrix2.set_perspective(math.pi/2, DISPLAY_WIDTH/DISPLAY_HEIGHT, 0.5, 100)
-        self.shader2.set_projection_matrix(self.projectionMatrix2.get_matrix())
+        self.projectionMatrix2.set_orthographic(-8, 8, -5, 5, 0.5, 100)
 
         # Initialize cube object
         self.cube = Cube()
@@ -96,13 +90,10 @@ class Maze3D:
         # Collission 
         self.collission = False
 
-
     def update(self) -> None:
         # Set delta time
         delta_time = self.clock.tick() / 500.0
         # Breytti ur 1000.0 í 500.0
-
-        self.angle += math.pi * delta_time
         if self.lShiftIsPressed:
             movementSpeed = MOVEMENTSPEED * 1.5
         else:
@@ -113,15 +104,11 @@ class Maze3D:
         slideNegX = False
         slidePosZ = False
         slideNegZ = False
-        
 
         # Collision detection
-        collisionRadius = 1
+        collisionRadius = 0.75
         for wall in self.levelWalls:
             data = wall.checkIfCollission(self.viewMatrix.eye.x, self.viewMatrix.eye.z, collisionRadius, self.viewMatrix.eye)
-            # if data[0]: 
-                # print(data)
-                # print(self.viewMatrix.eye)
             if data[0]:
                 self.collission = True
                 if not slidePosX:
@@ -133,7 +120,8 @@ class Maze3D:
                 if not slideNegZ:
                     slideNegZ = data[4]
 
-
+        # Make eye of the topDown view follow our normalView eye
+        self.viewMatrix2.eye = self.viewMatrix.eye
         # CHECK KEY INPUT
         # Keys: A, S, D, W
         jeff = [slidePosX, slideNegX, slidePosZ, slideNegZ]
@@ -172,11 +160,12 @@ class Maze3D:
     def display(self) -> None:
         glEnable(GL_DEPTH_TEST)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-        glViewport(0, DISPLAY_HEIGHT, 0, DISPLAY_WIDTH)
-        #glClearColor(0.78, 1.0, 1.0, 1.0)
+        glViewport(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        glClearColor(0.78, 1.0, 1.0, 1.0)
 
         # +++++ DRAW OBJECTS +++++
         self.shader.set_view_matrix(self.viewMatrix.get_matrix())
+        self.shader.set_projection_matrix(self.projectionMatrix.get_matrix())
 
         self.modelMatrix.load_identity()
 
@@ -206,64 +195,54 @@ class Maze3D:
             self.shader.set_model_matrix(self.modelMatrix.matrix)
             self.cube.draw(self.shader)
             self.modelMatrix.pop_matrix()
-        
-        if self.topDownview or self.thirdPersonView:
-            self.shader.set_solid_color(1, 0, 0)
-            self.modelMatrix.push_matrix()
-            self.modelMatrix.add_translation(self.viewMatrix.eye.x, 0.0, self.viewMatrix.eye.z)
-            self.modelMatrix.add_scale(1, 2, 1)
-            self.shader.set_model_matrix(self.modelMatrix.matrix)
-            self.cube.draw(self.shader)
-            self.modelMatrix.pop_matrix()
 
-        pygame.display.flip()
-
-    def display2(self) -> None:
-        glEnable(GL_DEPTH_TEST)
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-        #glViewport(720, 0, 720, 450)
-        #pygame.display.set_mode(720, 0, 720, 450)
-        #glClearColor(0.78, 1.0, 1.0, 1.0)
+        glDisable(GL_DEPTH_TEST)
+        glClear(GL_DEPTH_BUFFER_BIT)
+        glViewport(1080, 675, 360, 225)
+        glClearColor(0.78, 1.0, 1.0, 1.0)
 
         # +++++ DRAW OBJECTS +++++
-        self.shader.set_view_matrix(self.viewMatrix.get_matrix())
+        self.shader.set_view_matrix(self.viewMatrix2.get_matrix())
+        self.shader.set_projection_matrix(self.projectionMatrix2.get_matrix())
 
-        self.modelMatrix.load_identity()
+        self.modelMatrix2.load_identity()
 
-        self.cube.set_vertices(self.shader2)
-
+        self.cube2.set_vertices(self.shader)
         for ground in self.levelGround:
             self.shader.set_solid_color(ground.color[0], ground.color[1], ground.color[2])
-            self.modelMatrix.push_matrix()
-            self.modelMatrix.add_translation(ground.translation[0], ground.translation[1], ground.translation[2])
-            self.modelMatrix.add_rotate_x(ground.rotate[0])
-            self.modelMatrix.add_rotate_y(ground.rotate[1])
-            self.modelMatrix.add_rotate_z(ground.rotate[2])
-            self.modelMatrix.add_scale(ground.scale[0], ground.scale[1], ground.scale[2])
-            self.shader.set_model_matrix(self.modelMatrix.matrix)
-            self.cube.draw(self.shader)
-            self.modelMatrix.pop_matrix()
+            self.modelMatrix2.push_matrix()
+            self.modelMatrix2.add_translation(ground.translation[0], ground.translation[1], ground.translation[2])
+            self.modelMatrix2.add_rotate_x(ground.rotate[0])
+            self.modelMatrix2.add_rotate_y(ground.rotate[1])
+            self.modelMatrix2.add_rotate_z(ground.rotate[2])
+            self.modelMatrix2.add_scale(ground.scale[0], ground.scale[1], ground.scale[2])
+            self.shader.set_model_matrix(self.modelMatrix2.matrix)
+            self.cube2.draw(self.shader)
+            self.modelMatrix2.pop_matrix()
 
         # DRAW WALLS
         for wall in self.levelWalls:
             self.shader.set_solid_color(wall.color[0], wall.color[1], wall.color[2])
-            self.modelMatrix.push_matrix()
-            self.modelMatrix.add_translation(wall.translation[0], wall.translation[1], wall.translation[2])
-            self.modelMatrix.add_rotate_x(wall.rotate[0])
-            self.modelMatrix.add_rotate_y(wall.rotate[1])
-            self.modelMatrix.add_rotate_z(wall.rotate[2])
-            self.modelMatrix.add_scale(wall.scale[0], wall.scale[1], wall.scale[2])
-            self.shader.set_model_matrix(self.modelMatrix.matrix)
-            self.cube.draw(self.shader)
-            self.modelMatrix.pop_matrix()
-        
+            self.modelMatrix2.push_matrix()
+            self.modelMatrix2.add_translation(wall.translation[0], wall.translation[1], wall.translation[2])
+            self.modelMatrix2.add_rotate_x(wall.rotate[0])
+            self.modelMatrix2.add_rotate_y(wall.rotate[1])
+            self.modelMatrix2.add_rotate_z(wall.rotate[2])
+            self.modelMatrix2.add_scale(wall.scale[0], wall.scale[1], wall.scale[2])
+            self.shader.set_model_matrix(self.modelMatrix2.matrix)
+            self.cube2.draw(self.shader)
+            self.modelMatrix2.pop_matrix()
+
+        # DRAW PLAYER
         self.shader.set_solid_color(1, 0, 0)
-        self.modelMatrix.push_matrix()
-        self.modelMatrix.add_translation(self.viewMatrix.eye.x, 0.0, self.viewMatrix.eye.z)
-        self.modelMatrix.add_scale(1, 2, 1)
-        self.shader.set_model_matrix(self.modelMatrix.matrix)
-        self.cube.draw(self.shader)
-        self.modelMatrix.pop_matrix()
+        self.modelMatrix2.push_matrix()
+        self.modelMatrix2.add_translation(self.viewMatrix2.eye.x, 0.0, self.viewMatrix2.eye.z)
+        self.modelMatrix2.add_scale(1, 2, 1)
+        self.shader.set_model_matrix(self.modelMatrix2.matrix)
+        self.cube2.draw(self.shader)
+        self.modelMatrix2.pop_matrix()
+
+        pygame.display.flip()
 
     def program_loop(self) -> None:
         running = True
@@ -356,7 +335,6 @@ class Maze3D:
         
             self.update()
             self.display()
-            self.display2()
         
         # Quit game
         self.quit()

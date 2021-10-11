@@ -114,17 +114,13 @@ class ModelMatrix:
 class ViewMatrix:
     def __init__(self):
         self.eye = Point(0, 0, 0)
-        self.thirdPersonCamera = Point(0, 0, 0)
-        self.topCamera = Point(0.0, 40.0, 0.0)
         self.u = Vector(1, 0, 0)
         self.v = Vector(0, 1, 0)
         self.n = Vector(0, 0, 1)
         self.direction = Vector(-1, 0, 0)
-        self.viewMode = 0
 
     def look(self, eye, center, up):
         self.eye = eye
-        self.thirdPersonCamera = eye
         self.n = (eye - center)
         self.n.normalize()
         self.u = up.cross(self.n)
@@ -153,9 +149,7 @@ class ViewMatrix:
         if negZ:
             if vect.z < 0:
                 vect.z = 0
-        self.thirdPersonCamera += vect
         self.eye += vect
-        #self.eye += self.u * del_u + self.v * del_v  + self.direction * del_n
     
     def roll(self, angle):
         # Tilting view, rotate around vector n
@@ -170,15 +164,16 @@ class ViewMatrix:
         # Looking up and down, rotate around vector u
         c = cos(angle)
         s = sin(angle)
-        temp_v = self.v * c + self.n * s
-        self.n = self.v * -s + self.n * c
-        self.v = temp_v
+        if self.n.y < 0.95 and angle < 0 or self.n.y > -0.95 and angle > 0:
+            # check so we cant look up and down in a circle
+            temp_v = self.v * c + self.n * s
+            self.n = self.v * -s + self.n * c
+            self.v = temp_v
 
     def yaw(self, angle):
         # Looking to the sides, rotate around global vector y
         c = cos(angle)
         s = sin(angle)
-        counter = 0
         matrix = [c, 0, s,
                   0, 1, 0,
                  -s, 0, c,]
@@ -186,19 +181,9 @@ class ViewMatrix:
         self.u.multiply_with_matrix(matrix)
         self.n.multiply_with_matrix(matrix)
         self.direction.multiply_with_matrix(matrix)
-        
-
-        # temp_u = self.u * c + self.n * s
-        # self.n = self.u * -s + self.n * c
-        # self.u = temp_u
 
     def get_matrix(self):
-        if self.viewMode == 0:
-            minusEye = Vector(-self.eye.x, -self.eye.y, -self.eye.z)
-        elif self.viewMode == 1:
-            minusEye = Vector(-self.thirdPersonCamera.x, -self.thirdPersonCamera.y, -self.thirdPersonCamera.z)
-        elif self.viewMode == 2:
-            minusEye = Vector(-self.topCamera.x, -self.topCamera.y, -self.topCamera.z)
+        minusEye = Vector(-self.eye.x, -self.eye.y, -self.eye.z)
         return [self.u.x, self.u.y, self.u.z, minusEye.dot(self.u),
                 self.v.x, self.v.y, self.v.z, minusEye.dot(self.v),
                 self.n.x, self.n.y, self.n.z, minusEye.dot(self.n),
