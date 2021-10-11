@@ -344,6 +344,24 @@
             "comment": "Long Wall 1"
         }
     ],
+    "evilObjects": [
+        {
+            "color3f": [1.0, 0.0, 1.0],
+            "translationStart3f": [0.25, 1.5, -6.5],
+            "translationEnd3f": [0.25, 1.5, -0.75],
+            "rotate3f": [0.0, 0.0, 0.0],
+            "scale3f": [1.0, 3.0, 1.0],
+            "comment": "Evil 1"
+        },
+        {
+            "color3f": [1.0, 0.0, 1.0],
+            "translationStart3f": [-10.75, 1.5, 3.5],
+            "translationEnd3f": [-8.75, 1.5, 3.5],
+            "rotate3f": [0.0, 0.0, 0.0],
+            "scale3f": [1.0, 3.0, 1.0],
+            "comment": "Evil 2"
+        }
+    ],
     "ground": [
         {
             "color3f": [0.5, 0.5, 0.46],
