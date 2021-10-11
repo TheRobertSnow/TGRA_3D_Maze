@@ -250,7 +250,10 @@ class Maze3D:
             self.modelMatrix.pop_matrix()
 
         # DRAW FINISH LINE BOX
-        self.shader.set_solid_color(self.endPoint[0].color[0], self.endPoint[0].color[1], self.endPoint[0].color[2])
+        self.shader.set_material_diffuse(self.endPoint[0].color[0], self.endPoint[0].color[1], self.endPoint[0].color[2])
+        self.shader.set_material_specular(0.1, 0.1, 0.1)
+        self.shader.set_material_ambient(0.1, 0.1, 0.1)
+        self.shader.set_material_shininess(1.0)
         self.modelMatrix.push_matrix()
         self.modelMatrix.add_translation(self.endPoint[0].position[0], self.endPoint[0].position[1], self.endPoint[0].position[2])
         self.modelMatrix.add_scale(self.endPoint[0].scale[0], self.endPoint[0].scale[1], self.endPoint[0].scale[2])
@@ -330,7 +333,10 @@ class Maze3D:
         self.modelMatrix2.pop_matrix()
 
         # DRAW FINISH LINE BOX
-        self.shader.set_solid_color(self.endPoint[0].color[0], self.endPoint[0].color[1], self.endPoint[0].color[2])
+        self.shader.set_material_diffuse(self.endPoint[0].color[0], self.endPoint[0].color[1], self.endPoint[0].color[2])
+        self.shader.set_material_specular(0.1, 0.1, 0.1)
+        self.shader.set_material_ambient(0.1, 0.1, 0.1)
+        self.shader.set_material_shininess(1.0)
         self.modelMatrix2.push_matrix()
         self.modelMatrix2.add_translation(self.endPoint[0].position[0], self.endPoint[0].position[1], self.endPoint[0].position[2])
         self.modelMatrix2.add_scale(self.endPoint[0].scale[0], self.endPoint[0].scale[1], self.endPoint[0].scale[2])
