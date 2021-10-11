@@ -3,6 +3,7 @@ import sys
 
 from src.assets.types.walls import Walls
 from src.assets.types.ground import Ground
+from src.assets.types.evilObjects import EvilObject
 from src.assets.types.startPoint import StartPoint
 from src.assets.types.endPoint import EndPoint
 
@@ -14,6 +15,7 @@ class LevelLoader:
 
         self.walls = []
         self.ground = []
+        self.evilObjects = []
         self.startPoint = []
         self.endPoint = []
 
@@ -30,6 +32,11 @@ class LevelLoader:
         for i in data["ground"]:
             ground = Ground(i["color3f"], i["translation3f"], i["rotate3f"], i["scale3f"])
             self.ground.append(ground)
+
+        # Load evilObjects
+        for i in data["evilObjects"]:
+            evilObject = EvilObject(i["color3f"], i["translationStart3f"], i["translationEnd3f"], i["rotate3f"], i["scale3f"])
+            self.evilObjects.append(evilObject)
         
         # Load startPoint
         for i in data["startPoint"]:

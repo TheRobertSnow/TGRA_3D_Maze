@@ -34,6 +34,7 @@ class Maze3D:
         levelLoader.read_level(LEVEL_1)
         self.levelGround = levelLoader.ground
         self.levelWalls = levelLoader.walls
+        self.levelEvilObjects = levelLoader.evilObjects
         self.startPoint = levelLoader.startPoint
         self.endPoint = levelLoader.endPoint
 
@@ -120,6 +121,10 @@ class Maze3D:
                 if not slideNegZ:
                     slideNegZ = data[4]
 
+        for evilObject in self.levelEvilObjects:
+            evilObject.update(1 * delta_time)
+
+
         # Make eye of the topDown view follow our normalView eye
         self.viewMatrix2.eye = self.viewMatrix.eye
         # CHECK KEY INPUT
@@ -196,9 +201,22 @@ class Maze3D:
             self.cube.draw(self.shader)
             self.modelMatrix.pop_matrix()
 
+        # DRAW EVIL OBJECTS
+        for evilObject in self.levelEvilObjects:
+            self.shader.set_solid_color(evilObject.color[0], evilObject.color[1], evilObject.color[2])
+            self.modelMatrix.push_matrix()
+            self.modelMatrix.add_translation(evilObject.translationCurr.x, evilObject.translationCurr.y, evilObject.translationCurr.z)
+            self.modelMatrix.add_rotate_x(evilObject.rotate[0])
+            self.modelMatrix.add_rotate_y(evilObject.rotate[1])
+            self.modelMatrix.add_rotate_z(evilObject.rotate[2])
+            self.modelMatrix.add_scale(evilObject.scale[0], evilObject.scale[1], evilObject.scale[2])
+            self.shader.set_model_matrix(self.modelMatrix.matrix)
+            self.cube.draw(self.shader)
+            self.modelMatrix.pop_matrix()
+
         glDisable(GL_DEPTH_TEST)
         glClear(GL_DEPTH_BUFFER_BIT)
-        glViewport(1080, 675, 360, 225)
+        glViewport(1065, 660, 360, 225)
         glClearColor(0.78, 1.0, 1.0, 1.0)
 
         # +++++ DRAW OBJECTS +++++
@@ -229,6 +247,19 @@ class Maze3D:
             self.modelMatrix2.add_rotate_y(wall.rotate[1])
             self.modelMatrix2.add_rotate_z(wall.rotate[2])
             self.modelMatrix2.add_scale(wall.scale[0], wall.scale[1], wall.scale[2])
+            self.shader.set_model_matrix(self.modelMatrix2.matrix)
+            self.cube2.draw(self.shader)
+            self.modelMatrix2.pop_matrix()
+        
+        # DRAW EVIL OBJECTS
+        for evilObject in self.levelEvilObjects:
+            self.shader.set_solid_color(evilObject.color[0], evilObject.color[1], evilObject.color[2])
+            self.modelMatrix2.push_matrix()
+            self.modelMatrix2.add_translation(evilObject.translationStart[0], evilObject.translationStart[1], evilObject.translationStart[2])
+            self.modelMatrix2.add_rotate_x(evilObject.rotate[0])
+            self.modelMatrix2.add_rotate_y(evilObject.rotate[1])
+            self.modelMatrix2.add_rotate_z(evilObject.rotate[2])
+            self.modelMatrix2.add_scale(evilObject.scale[0], evilObject.scale[1], evilObject.scale[2])
             self.shader.set_model_matrix(self.modelMatrix2.matrix)
             self.cube2.draw(self.shader)
             self.modelMatrix2.pop_matrix()
