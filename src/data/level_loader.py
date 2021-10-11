@@ -45,7 +45,7 @@ class LevelLoader:
 
         # Load endPoint
         for i in data["endPoint"]:
-            endPoint = EndPoint(i["position"])
+            endPoint = EndPoint(i["color3f"], i["position"], i["scale3f"])
             self.endPoint.append(endPoint)
         
 

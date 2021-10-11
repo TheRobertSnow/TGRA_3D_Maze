@@ -338,6 +338,27 @@
         },
         {
             "color3f": [0.8, 1.0, 0.8],
+            "translation3f": [20.25, 1.5, -3.5],
+            "rotate3f": [0.0, 0.0, 0.0],
+            "scale3f": [6.0, 3.0, 0.5],
+            "comment": ""
+        },
+        {
+            "color3f": [0.8, 1.0, 0.8],
+            "translation3f": [20.25, 1.5, 0.0],
+            "rotate3f": [0.0, 0.0, 0.0],
+            "scale3f": [6.0, 3.0, 0.5],
+            "comment": ""
+        },
+        {
+            "color3f": [0.8, 1.0, 0.8],
+            "translation3f": [23.25, 1.5, -1.75],
+            "rotate3f": [0.0, 0.0, 0.0],
+            "scale3f": [0.5, 3.0, 4.0],
+            "comment": ""
+        },
+        {
+            "color3f": [0.8, 1.0, 0.8],
             "translation3f": [-8.75, 1.5, 3.5],
             "rotate3f": [0.0, 0.0, 0.0],
             "scale3f": [18.0, 3.0, 0.5],
@@ -355,8 +376,8 @@
         },
         {
             "color3f": [1.0, 0.0, 1.0],
-            "translationStart3f": [-10.75, 1.5, 3.5],
-            "translationEnd3f": [-8.75, 1.5, 3.5],
+            "translationStart3f": [-13.25, 1.5, -3.75],
+            "translationEnd3f": [-11.25, 1.5, -3.75],
             "rotate3f": [0.0, 0.0, 0.0],
             "scale3f": [1.0, 3.0, 1.0],
             "comment": "Evil 2"
@@ -377,7 +398,9 @@
     ],
     "endPoint": [
         {
-            "position": [21.0, 1.5, -1.75]
+            "color3f": [0.0, 1.0, 0.2],
+            "position": [21.0, 1.5, -1.75],
+            "scale3f": [3.0, 3.0, 3.0]
         }
     ]
 }

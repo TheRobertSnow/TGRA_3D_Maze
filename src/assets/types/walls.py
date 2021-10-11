@@ -7,7 +7,7 @@ class Walls:
         self.rotate = rotate
         self.scale = scale
 
-    def checkIfCollission(self, x, z, r, eye):
+    def checkIfCollission(self, x, z, r):
         # Return list:
         # [bool, bool, bool, bool, bool]
         # [Collision detected, disable +x, disable -x, disable +z, disable -z]

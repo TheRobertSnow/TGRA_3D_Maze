@@ -109,7 +109,7 @@ class Maze3D:
         # Collision detection
         collisionRadius = 0.75
         for wall in self.levelWalls:
-            data = wall.checkIfCollission(self.viewMatrix.eye.x, self.viewMatrix.eye.z, collisionRadius, self.viewMatrix.eye)
+            data = wall.checkIfCollission(self.viewMatrix.eye.x, self.viewMatrix.eye.z, collisionRadius)
             if data[0]:
                 self.collission = True
                 if not slidePosX:
@@ -121,9 +121,16 @@ class Maze3D:
                 if not slideNegZ:
                     slideNegZ = data[4]
 
+        evilCollisionRadius = 0.5
         for evilObject in self.levelEvilObjects:
-            evilObject.update(1 * delta_time)
-
+            evilObject.update(1 * delta_time) # Move evil objects back and forth
+            if evilObject.checkIfCollission(self.viewMatrix.eye.x, self.viewMatrix.eye.z, evilCollisionRadius): # if collission then game over
+                print("You Lost The Game")
+                exit()
+        
+        if self.endPoint[0].checkIfCollission(self.viewMatrix.eye.x, self.viewMatrix.eye.z, evilCollisionRadius): # if collission then Win level
+            print("You Won The Game")
+            exit()
 
         # Make eye of the topDown view follow our normalView eye
         self.viewMatrix2.eye = self.viewMatrix.eye
@@ -214,6 +221,15 @@ class Maze3D:
             self.cube.draw(self.shader)
             self.modelMatrix.pop_matrix()
 
+        # DRAW FINISH LINE BOX
+        self.shader.set_solid_color(self.endPoint[0].color[0], self.endPoint[0].color[1], self.endPoint[0].color[2])
+        self.modelMatrix.push_matrix()
+        self.modelMatrix.add_translation(self.endPoint[0].position[0], self.endPoint[0].position[1], self.endPoint[0].position[2])
+        self.modelMatrix.add_scale(self.endPoint[0].scale[0], self.endPoint[0].scale[1], self.endPoint[0].scale[2])
+        self.shader.set_model_matrix(self.modelMatrix.matrix)
+        self.cube.draw(self.shader)
+        self.modelMatrix.pop_matrix()
+
         glDisable(GL_DEPTH_TEST)
         glClear(GL_DEPTH_BUFFER_BIT)
         glViewport(1065, 660, 360, 225)
@@ -255,7 +271,7 @@ class Maze3D:
         for evilObject in self.levelEvilObjects:
             self.shader.set_solid_color(evilObject.color[0], evilObject.color[1], evilObject.color[2])
             self.modelMatrix2.push_matrix()
-            self.modelMatrix2.add_translation(evilObject.translationStart[0], evilObject.translationStart[1], evilObject.translationStart[2])
+            self.modelMatrix2.add_translation(evilObject.translationCurr.x, evilObject.translationCurr.y, evilObject.translationCurr.z)
             self.modelMatrix2.add_rotate_x(evilObject.rotate[0])
             self.modelMatrix2.add_rotate_y(evilObject.rotate[1])
             self.modelMatrix2.add_rotate_z(evilObject.rotate[2])
@@ -269,6 +285,15 @@ class Maze3D:
         self.modelMatrix2.push_matrix()
         self.modelMatrix2.add_translation(self.viewMatrix2.eye.x, 0.0, self.viewMatrix2.eye.z)
         self.modelMatrix2.add_scale(1, 2, 1)
+        self.shader.set_model_matrix(self.modelMatrix2.matrix)
+        self.cube2.draw(self.shader)
+        self.modelMatrix2.pop_matrix()
+
+        # DRAW FINISH LINE BOX
+        self.shader.set_solid_color(self.endPoint[0].color[0], self.endPoint[0].color[1], self.endPoint[0].color[2])
+        self.modelMatrix2.push_matrix()
+        self.modelMatrix2.add_translation(self.endPoint[0].position[0], self.endPoint[0].position[1], self.endPoint[0].position[2])
+        self.modelMatrix2.add_scale(self.endPoint[0].scale[0], self.endPoint[0].scale[1], self.endPoint[0].scale[2])
         self.shader.set_model_matrix(self.modelMatrix2.matrix)
         self.cube2.draw(self.shader)
         self.modelMatrix2.pop_matrix()

@@ -31,3 +31,12 @@ class EvilObject:
                 self.translationCurr.z += move
                 if self.translationCurr.z > self.translationEnd[2]:
                     self.direction.z = -self.direction.z
+    
+    def checkIfCollission(self, x, z, r):
+        P1_x = self.translationCurr.x - (self.scale[0] * 0.5)
+        P1_z = self.translationCurr.z - (self.scale[2] * 0.5)
+        P2_x = self.translationCurr.x + (self.scale[0] * 0.5)
+        P2_z = self.translationCurr.z + (self.scale[2] * 0.5)
+        if x + r >= P1_x and z + r >= P1_z and x - r <= P2_x and z - r <= P2_z:
+            return True
+        return False
