@@ -54,6 +54,13 @@ class Maze3D:
         self.projectionMatrix.set_perspective(math.pi/2, DISPLAY_WIDTH/DISPLAY_HEIGHT, 0.5, 100)
         self.shader.set_projection_matrix(self.projectionMatrix.get_matrix())
 
+        # Lights
+        # self.shader.set_light_position(Point(-21.0, 1.5, 1.75))
+        # self.shader.set_light_diffuse(1.0, 1.0, 1.0)
+        # self.shader.set_light_specular(1.0, 1.0, 1.0)
+
+        
+
         # Initialize cube object
         self.cube = Cube()
 
@@ -171,8 +178,23 @@ class Maze3D:
 
         self.cube.set_vertices(self.shader)
 
+        pos = [(21.0, 1.5, 1.75), (-21.0, 1.5, 1.75), (0.0, 1.5, 1.75)]
+        diff = [(1.0, 1.0, 1.0, 1.0), (1.0, 1.0, 1.0, 1.0), (1.0, 1.0, 1.0, 1.0)]
+        spec = [(0.2, 0.2, 0.2, 1.0), (0.2, 0.2, 0.2, 1.0), (0.2, 0.2, 0.2, 1.0)]
+        le = 3
+        self.shader.set_eye_position(self.viewMatrix.eye)
+        self.shader.set_directional_light(0.2, 0.2, 0.2)
+
+        self.shader.set_number_of_lights(le)
+        self.shader.set_light_position(pos)
+        self.shader.set_light_diffuse(diff)
+        self.shader.set_light_specular(spec)
+
         for ground in self.levelGround:
-            self.shader.set_solid_color(ground.color[0], ground.color[1], ground.color[2])
+            self.shader.set_material_diffuse(ground.color[0], ground.color[1], ground.color[2])
+            self.shader.set_material_specular(0.1, 0.1, 0.1)
+            self.shader.set_material_ambient(0.1, 0.1, 0.1)
+            self.shader.set_material_shininess(1.0)
             self.modelMatrix.push_matrix()
             self.modelMatrix.add_translation(ground.translation[0], ground.translation[1], ground.translation[2])
             self.modelMatrix.add_rotate_x(ground.rotate[0])
@@ -185,7 +207,10 @@ class Maze3D:
 
         # DRAW WALLS
         for wall in self.levelWalls:
-            self.shader.set_solid_color(wall.color[0], wall.color[1], wall.color[2])
+            self.shader.set_material_diffuse(wall.color[0], wall.color[1], wall.color[2])
+            self.shader.set_material_specular(0.1, 0.1, 0.1)
+            self.shader.set_material_ambient(0.1, 0.1, 0.1)
+            self.shader.set_material_shininess(1.0)
             self.modelMatrix.push_matrix()
             self.modelMatrix.add_translation(wall.translation[0], wall.translation[1], wall.translation[2])
             self.modelMatrix.add_rotate_x(wall.rotate[0])
