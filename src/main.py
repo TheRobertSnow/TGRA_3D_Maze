@@ -58,6 +58,13 @@ class Maze3D:
         self.projectionMatrix2 = ProjectionMatrix()
         self.projectionMatrix2.set_orthographic(-8, 8, -5, 5, 0.5, 100)
 
+        # Lights
+        # self.shader.set_light_position(Point(-21.0, 1.5, 1.75))
+        # self.shader.set_light_diffuse(1.0, 1.0, 1.0)
+        # self.shader.set_light_specular(1.0, 1.0, 1.0)
+
+        
+
         # Initialize cube object
         self.cube = Cube()
         self.cube2 = Cube()
@@ -183,8 +190,23 @@ class Maze3D:
 
         self.cube.set_vertices(self.shader)
 
+        pos = [(21.0, 1.5, 1.75), (-21.0, 1.5, 1.75), (0.0, 1.5, 1.75)]
+        diff = [(1.0, 1.0, 1.0, 1.0), (1.0, 1.0, 1.0, 1.0), (1.0, 1.0, 1.0, 1.0)]
+        spec = [(0.2, 0.2, 0.2, 1.0), (0.2, 0.2, 0.2, 1.0), (0.2, 0.2, 0.2, 1.0)]
+        le = 3
+        self.shader.set_eye_position(self.viewMatrix.eye)
+        self.shader.set_directional_light(0.2, 0.2, 0.2)
+
+        self.shader.set_number_of_lights(le)
+        self.shader.set_light_position(pos)
+        self.shader.set_light_diffuse(diff)
+        self.shader.set_light_specular(spec)
+
         for ground in self.levelGround:
-            self.shader.set_solid_color(ground.color[0], ground.color[1], ground.color[2])
+            self.shader.set_material_diffuse(ground.color[0], ground.color[1], ground.color[2])
+            self.shader.set_material_specular(0.1, 0.1, 0.1)
+            self.shader.set_material_ambient(0.1, 0.1, 0.1)
+            self.shader.set_material_shininess(1.0)
             self.modelMatrix.push_matrix()
             self.modelMatrix.add_translation(ground.translation[0], ground.translation[1], ground.translation[2])
             self.modelMatrix.add_rotate_x(ground.rotate[0])
@@ -197,7 +219,10 @@ class Maze3D:
 
         # DRAW WALLS
         for wall in self.levelWalls:
-            self.shader.set_solid_color(wall.color[0], wall.color[1], wall.color[2])
+            self.shader.set_material_diffuse(wall.color[0], wall.color[1], wall.color[2])
+            self.shader.set_material_specular(0.1, 0.1, 0.1)
+            self.shader.set_material_ambient(0.1, 0.1, 0.1)
+            self.shader.set_material_shininess(1.0)
             self.modelMatrix.push_matrix()
             self.modelMatrix.add_translation(wall.translation[0], wall.translation[1], wall.translation[2])
             self.modelMatrix.add_rotate_x(wall.rotate[0])
@@ -210,7 +235,10 @@ class Maze3D:
 
         # DRAW EVIL OBJECTS
         for evilObject in self.levelEvilObjects:
-            self.shader.set_solid_color(evilObject.color[0], evilObject.color[1], evilObject.color[2])
+            self.shader.set_material_diffuse(evilObject.color[0], evilObject.color[1], evilObject.color[2])
+            self.shader.set_material_specular(0.1, 0.1, 0.1)
+            self.shader.set_material_ambient(0.1, 0.1, 0.1)
+            self.shader.set_material_shininess(1.0)
             self.modelMatrix.push_matrix()
             self.modelMatrix.add_translation(evilObject.translationCurr.x, evilObject.translationCurr.y, evilObject.translationCurr.z)
             self.modelMatrix.add_rotate_x(evilObject.rotate[0])
@@ -243,7 +271,10 @@ class Maze3D:
 
         self.cube2.set_vertices(self.shader)
         for ground in self.levelGround:
-            self.shader.set_solid_color(ground.color[0], ground.color[1], ground.color[2])
+            self.shader.set_material_diffuse(ground.color[0], ground.color[1], ground.color[2])
+            self.shader.set_material_specular(0.1, 0.1, 0.1)
+            self.shader.set_material_ambient(0.1, 0.1, 0.1)
+            self.shader.set_material_shininess(1.0)
             self.modelMatrix2.push_matrix()
             self.modelMatrix2.add_translation(ground.translation[0], ground.translation[1], ground.translation[2])
             self.modelMatrix2.add_rotate_x(ground.rotate[0])
@@ -256,7 +287,10 @@ class Maze3D:
 
         # DRAW WALLS
         for wall in self.levelWalls:
-            self.shader.set_solid_color(wall.color[0], wall.color[1], wall.color[2])
+            self.shader.set_material_diffuse(wall.color[0], wall.color[1], wall.color[2])
+            self.shader.set_material_specular(0.1, 0.1, 0.1)
+            self.shader.set_material_ambient(0.1, 0.1, 0.1)
+            self.shader.set_material_shininess(1.0)
             self.modelMatrix2.push_matrix()
             self.modelMatrix2.add_translation(wall.translation[0], wall.translation[1], wall.translation[2])
             self.modelMatrix2.add_rotate_x(wall.rotate[0])
@@ -269,7 +303,10 @@ class Maze3D:
         
         # DRAW EVIL OBJECTS
         for evilObject in self.levelEvilObjects:
-            self.shader.set_solid_color(evilObject.color[0], evilObject.color[1], evilObject.color[2])
+            self.shader.set_material_diffuse(evilObject.color[0], evilObject.color[1], evilObject.color[2])
+            self.shader.set_material_specular(0.1, 0.1, 0.1)
+            self.shader.set_material_ambient(0.1, 0.1, 0.1)
+            self.shader.set_material_shininess(1.0)
             self.modelMatrix2.push_matrix()
             self.modelMatrix2.add_translation(evilObject.translationCurr.x, evilObject.translationCurr.y, evilObject.translationCurr.z)
             self.modelMatrix2.add_rotate_x(evilObject.rotate[0])
@@ -281,7 +318,10 @@ class Maze3D:
             self.modelMatrix2.pop_matrix()
 
         # DRAW PLAYER
-        self.shader.set_solid_color(1, 0, 0)
+        self.shader.set_material_diffuse(wall.color[0], wall.color[1], wall.color[2])
+        self.shader.set_material_specular(0.1, 0.1, 0.1)
+        self.shader.set_material_ambient(1.0, 0.0, 0.0)
+        self.shader.set_material_shininess(1.0)
         self.modelMatrix2.push_matrix()
         self.modelMatrix2.add_translation(self.viewMatrix2.eye.x, 0.0, self.viewMatrix2.eye.z)
         self.modelMatrix2.add_scale(1, 2, 1)
