@@ -29,7 +29,7 @@ class Maze3D:
         # Lock mouse and keyboard to game window
         pygame.event.set_grab(True)
 
-        # Load levels
+        # Load level
         levelLoader = LevelLoader()
         levelLoader.read_level(LEVEL_1)
         self.levelGround = levelLoader.ground
@@ -44,26 +44,25 @@ class Maze3D:
 
         # Initialize model_matrix
         self.modelMatrix = ModelMatrix()
+
+        # Initialize model_matrix for Top Down View
         self.modelMatrix2 = ModelMatrix()
 
         # Initialize view_matrix
         self.viewMatrix = ViewMatrix()
         self.viewMatrix.look(Point(self.startPoint[0].position[0], self.startPoint[0].position[1], self.startPoint[0].position[2]), Point(0,0,0), Vector(0,1,0))
+
+        # Initialize view_matrix for Top Down View
         self.viewMatrix2 = ViewMatrix()
         self.viewMatrix2.look(Point(self.startPoint[0].position[0], 10, self.startPoint[0].position[2]), Point(self.startPoint[0].position[0] + 0.01, self.startPoint[0].position[1], self.startPoint[0].position[2]), Vector(0,1,0))
 
         # Initialize projection_matrix
         self.projectionMatrix = ProjectionMatrix()
         self.projectionMatrix.set_perspective(math.pi/2, DISPLAY_WIDTH/DISPLAY_HEIGHT, 0.5, 100)
+
+        # Initialize projection_matrix for Top Down View
         self.projectionMatrix2 = ProjectionMatrix()
         self.projectionMatrix2.set_orthographic(-8, 8, -5, 5, 0.5, 100)
-
-        # Lights
-        # self.shader.set_light_position(Point(-21.0, 1.5, 1.75))
-        # self.shader.set_light_diffuse(1.0, 1.0, 1.0)
-        # self.shader.set_light_specular(1.0, 1.0, 1.0)
-
-        
 
         # Initialize cube object
         self.cube = Cube()
@@ -72,9 +71,6 @@ class Maze3D:
         # Initialize clock
         self.clock = pygame.time.Clock()
         self.clock.tick()
-
-        # Test variable
-        self.angle = 0
 
         # Camera Mode
         self.cameraMode = mode
@@ -86,10 +82,6 @@ class Maze3D:
         self.sIsPressed = False
         self.dIsPressed = False
         self.wIsPressed = False
-        self.leftIsPressed = False
-        self.downIsPressed = False
-        self.rightIsPressed = False
-        self.upIsPressed = False
         self.lShiftIsPressed = False
 
         # Mouse
@@ -141,6 +133,7 @@ class Maze3D:
 
         # Make eye of the topDown view follow our normalView eye
         self.viewMatrix2.eye = self.viewMatrix.eye
+
         # CHECK KEY INPUT
         # Keys: A, S, D, W
         jeff = [slidePosX, slideNegX, slidePosZ, slideNegZ]
@@ -163,6 +156,7 @@ class Maze3D:
             if self.wIsPressed:
                 self.viewMatrix.move(0, 0, -movementSpeed * delta_time, jeff)
 
+        # CHECK MOUSE MOVE
         if self.mouseMove:
             mouseXNew, mouseYNew = pygame.mouse.get_rel()
             mouseXNew = (mouseXNew / 25) * MOUSESENS
@@ -179,7 +173,7 @@ class Maze3D:
     def display(self) -> None:
         glEnable(GL_DEPTH_TEST)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-        glViewport(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        glViewport(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT) # Main ViewPort
         glClearColor(0.78, 1.0, 1.0, 1.0)
 
         # +++++ DRAW OBJECTS +++++
@@ -263,7 +257,7 @@ class Maze3D:
 
         glDisable(GL_DEPTH_TEST)
         glClear(GL_DEPTH_BUFFER_BIT)
-        glViewport(1065, 660, 360, 225)
+        glViewport(1065, 660, 360, 225) # Top Down ViewPort
         glClearColor(0.78, 1.0, 1.0, 1.0)
 
         # +++++ DRAW OBJECTS +++++
@@ -353,9 +347,7 @@ class Maze3D:
                 if event.type == pygame.QUIT:
                     print("Quit game")
                     running = False
-                
                 elif event.type == pygame.KEYDOWN:
-                    # Danni code
                     # Esc key to quit game
                     if event.key == K_ESCAPE:
                         print("Quit game")
@@ -369,28 +361,9 @@ class Maze3D:
                         self.dIsPressed = True
                     elif event.key == K_w:
                         self.wIsPressed = True
-                    # Keys: Left, Down, Right, Up
-                    elif event.key == K_LEFT:
-                        self.leftIsPressed = True
-                    elif event.key == K_DOWN:
-                        self.downIsPressed = True
-                    elif event.key == K_RIGHT:
-                        self.rightIsPressed = True
-                    elif event.key == K_UP:
-                        self.upIsPressed = True
                     # Key: Left Shift
                     elif event.key == K_LSHIFT:
                         self.lShiftIsPressed = True
-                    # Key: T
-                    elif event.key == K_r:
-                        self.thirdPersonView = True
-                        self.viewMatrix.viewMode = 1
-                    # Key: T
-                    elif event.key == K_t:
-                        self.topDownview = True
-                        self.viewMatrix.viewMode = 2
-                    
-                
                 elif event.type == pygame.KEYUP:
                     # Keys: A, S, D, W
                     if event.key == K_a:
@@ -401,43 +374,15 @@ class Maze3D:
                         self.dIsPressed = False
                     elif event.key == K_w:
                         self.wIsPressed = False
-                    # Keys: Left, Down, Right, Up
-                    elif event.key == K_LEFT:
-                        self.leftIsPressed = False
-                    elif event.key == K_DOWN:
-                        self.downIsPressed = False
-                    elif event.key == K_RIGHT:
-                        self.rightIsPressed = False
-                    elif event.key == K_UP:
-                        self.upIsPressed = False
                     # Key: Left Shift
                     elif event.key == K_LSHIFT:
                         self.lShiftIsPressed = False
-                    # Key: T
-                    elif event.key == K_r:
-                        self.thirdPersonView = False
-                        self.viewMatrix.viewMode = 1
-                    # Key: T
-                    elif event.key == K_t:
-                        self.topDownview = False
-                        self.viewMatrix.viewMode = 0
-                
                 elif event.type == pygame.MOUSEMOTION:
                     self.mouseMove = True
-
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    pass
-
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    pass
-
                 else:
                     self.mouseMove = False
-
-        
             self.update()
             self.display()
-        
         # Quit game
         self.quit()
 
